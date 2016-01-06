@@ -5,7 +5,7 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu trusty main universe" > /etc/apt/
 RUN apt-get -q -y update
 RUN apt-get -q -y install software-properties-common wget unzip curl
 RUN apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db
-RUN add-apt-repository 'deb [arch=amd64,i386] http://mirror.23media.de/mariadb/repo/10.1/ubuntu trusty main'
+RUN add-apt-repository 'deb [arch=amd64,i386] http://ftp.hosteurope.de/mirror/mariadb.org/repo/10.1/ubuntu trusty main'
 RUN apt-get -q -y update
 RUN echo mariadb-server mysql-server/root_password password root | debconf-set-selections
 RUN echo mariadb-server mysql-server/root_password_again password root | debconf-set-selections
