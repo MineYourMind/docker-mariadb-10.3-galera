@@ -1,0 +1,42 @@
+#!/bin/bash
+
+firstrun ()
+{
+
+	cp -rf /var/lib/mysql/* /data/
+	chown mysql -R /data
+	ZK_CLIENT_PORT=${ZK_CLIENT_PORT:-"2181"}
+}
+
+main() {
+  
+  service ssh restart
+  
+	if [[ ! -f /data/debian-10.1.flag ]]
+	then
+		firstrun
+
+	else
+
+		case "$1" in
+			new)
+				echo "Starting master"
+				/usr/bin/mysqld_safe --wsrep-new-cluster
+				;;
+			node)
+				echo "Starting node"
+				/usr/bin/mysqld_safe
+				;;
+			restart_cluster)
+				echo "Restarting cluster."
+				echo "Run this command only on one node"
+				/usr/bin/mysqld_safe --wsrep-cluster-address=gcomm://
+				;;
+			*)
+				echo "start <master|node>"
+		esac
+	fi
+}
+
+main $@
+
