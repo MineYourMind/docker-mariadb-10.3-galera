@@ -76,3 +76,17 @@ If anything goes wrong, you can always debug via the error.log
 ```
 tail -f /var/data/mariadb/error.log
 ```
+
+
+# 6 - Migration from 10.0
+
+```
+docker build -t mym/mariadb-galera-10.1 https://github.com/MineYourMind/docker-mariadb-10.1-galera.git && \
+docker run --name mariadb-cluster-config -v /var/configs/mariadb-cluster/conf.d:/etc/mysql/conf.d busybox true && \
+docker run --name mariadb-cluster-data -v /var/data/mariadb-cluster:/data busybox true && \
+docker run --name mariadb-cluster-ssh -v /var/configs/mariadb-cluster/.ssh:/root/.ssh busybox true && \
+cp -rv /var/configs/mariadb/* /var/configs/mariadb-cluster/ && \
+sed -i '65i wsrep_on=ON' /var/configs/mariadb-cluster/conf.d/cluster.cnf && \
+docker stop mariadb-srv && \
+docker run -t -i -d --net=host --privileged=true --volumes-from mariadb-cluster-config --volumes-from mariadb-cluster-data --volumes-from mariadb-cluster-ssh -v /etc/timezone:/etc/timezone:ro -e "TZ=Europe/Berlin" --name mariadb-cluster-srv mym/mariadb-galera-10.1 /bin/start node
+```
