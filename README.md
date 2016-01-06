@@ -10,7 +10,7 @@ Let's say server1, server2, server3. You will have 2 data containers (data+confi
 
 ##### Build Image
 ```
-docker build https://github.com/MineYourMind/docker-mariadb-10.1-galera.git
+docker build -t mym/mariadb-galera-10.1 https://github.com/MineYourMind/docker-mariadb-10.1-galera.git
 ```
 
 
@@ -42,7 +42,6 @@ docker run --name mariadb-ssh -v /var/configs/mariadb/.ssh:/root/.ssh busybox tr
 
 # 2 - Config
 ```
-sudo docker tag <imageid> mym/mariadb-galera-10.1
 cd /var/configs/mariadb/conf.d
 sudo nano cluster.cnf
 ```
