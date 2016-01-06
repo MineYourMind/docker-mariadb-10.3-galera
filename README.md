@@ -16,14 +16,14 @@ docker build -t mym/mariadb-galera-10.1 https://github.com/MineYourMind/docker-m
 
 ##### Make a config container that will be accessible from the host and the container.
 ```
-docker run --name mariadb-config -v /var/configs/mariadb/conf.d:/etc/mysql/conf.d busybox true
+docker run --name mariadb-cluster-config -v /var/configs/mariadb-cluster/conf.d:/etc/mysql/conf.d busybox true
                                             ^^^^^^                      ^^^^^^
                                             Host directory               Container directory
 ```
 
 ##### Make a data container that will be accessible from the host and the container.
 ```
-docker run --name mariadb-data -v /var/data/mariadb:/data busybox true
+docker run --name mariadb-cluster-data -v /var/data/mariadb-cluster:/data busybox true
                                             ^^^^^^^                      ^^^^^^
                                             Host directory               Container directory
 ```
@@ -32,7 +32,7 @@ docker run --name mariadb-data -v /var/data/mariadb:/data busybox true
 
 ##### Make a ssh container that will be accessible from the host and the container.
 ```
-docker run --name mariadb-ssh -v /var/configs/mariadb/.ssh:/root/.ssh busybox true
+docker run --name mariadb-cluster-ssh -v /var/configs/mariadb-cluster/.ssh:/root/.ssh busybox true
                                             ^^^^^^^                      ^^^^^^
                                             Host directory               Container directory
 ```
@@ -51,24 +51,24 @@ Do this on all servers
 
 # 3 - Initial startup
 
-Start the first server with (sometimes requires "sudo docker restart mariadb-srv"):
+Start the first server with (sometimes requires "sudo docker restart mariadb-cluster-srv"):
 ```
-docker run -t -i -d --net=host --privileged=true --volumes-from mariadb-config --volumes-from mariadb-data --volumes-from mariadb-ssh -v /etc/timezone:/etc/timezone:ro -e "TZ=Europe/Berlin" --name mariadb-srv mym/mariadb-galera-10.1 /bin/start new
+docker run -t -i -d --net=host --privileged=true --volumes-from mariadb-cluster-config --volumes-from mariadb-cluster-data --volumes-from mariadb-cluster-ssh -v /etc/timezone:/etc/timezone:ro -e "TZ=Europe/Berlin" --name mariadb-cluster-srv mym/mariadb-galera-10.1 /bin/start new
 ```
 
 Start other servers with :
 ```
 # other servers
-docker run -t -i -d --net=host --privileged=true --volumes-from mariadb-config --volumes-from mariadb-data --volumes-from mariadb-ssh -v /etc/timezone:/etc/timezone:ro -e "TZ=Europe/Berlin" --name mariadb-srv mym/mariadb-galera-10.1 /bin/start node
+docker run -t -i -d --net=host --privileged=true --volumes-from mariadb-cluster-config --volumes-from mariadb-cluster-data --volumes-from mariadb-cluster-ssh -v /etc/timezone:/etc/timezone:ro -e "TZ=Europe/Berlin" --name mariadb-cluster-srv mym/mariadb-galera-10.1 /bin/start node
 ```
 
 # 4 - Restart server1 in "node mode"
 It is very important to restart the first node just like the other. Otherwise if you stop and start your container, you will create a new cluster each time.
 
 ```
-docker stop mariadb-srv
-docker rm mariadb-srv
-docker run -t -i -d --net=host --privileged=true --volumes-from mariadb-config --volumes-from mariadb-data --volumes-from mariadb-ssh -v /etc/timezone:/etc/timezone:ro -e "TZ=Europe/Berlin" --name mariadb-srv mym/mariadb-galera-10.1 /bin/start node
+docker stop mariadb-cluster-srv
+docker rm mariadb-cluster-srv
+docker run -t -i -d --net=host --privileged=true --volumes-from mariadb-cluster-config --volumes-from mariadb-cluster-data --volumes-from mariadb-cluster-ssh -v /etc/timezone:/etc/timezone:ro -e "TZ=Europe/Berlin" --name mariadb-cluster-srv mym/mariadb-galera-10.1 /bin/start node
 ```
 
 # 5 - Debug
