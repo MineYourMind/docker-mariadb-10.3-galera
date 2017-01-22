@@ -17,5 +17,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server &&	mkdir -p
 ADD sshd_config /etc/ssh/sshd_config
 RUN service ssh restart
 
+#clean up
+RUN apt-get -q -y autoremove && \
+ apt-get -q -y clean &&
+
 ADD start /bin/start
 RUN chmod +x /bin/start
