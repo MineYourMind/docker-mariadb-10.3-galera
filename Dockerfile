@@ -19,7 +19,7 @@ RUN service ssh restart
 
 #clean up
 RUN apt-get -q -y autoremove && \
- apt-get -q -y clean &&
+ apt-get -q -y clean
 
 ADD start /bin/start
 RUN chmod +x /bin/start
