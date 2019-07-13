@@ -1,5 +1,5 @@
-# docker-mariadb-10.1-galera
-Multi Master Replication using MariaDB 10.1 and Galera inside Docker.
+# docker-mariadb-10.3-galera
+Multi Master Replication using MariaDB 10.3 and Galera inside Docker.
 
 Requires at least 3 nodes.
 
@@ -10,7 +10,7 @@ Let's say server1, server2, server3. You will have 2 data containers (data+confi
 
 ##### Build Image
 ```
-docker build -t mym/mariadb-galera-10.1 https://github.com/MineYourMind/docker-mariadb-10.1-galera.git
+docker build -t mym/mariadb-galera-10.3 https://github.com/MineYourMind/docker-mariadb-10.3-galera.git
 ```
 
 
@@ -53,13 +53,13 @@ Do this on all servers
 
 Start the first server with (sometimes requires "sudo docker restart mariadb-cluster-srv"):
 ```
-docker run -t -i -d --net=host --privileged=true --volumes-from mariadb-cluster-config --volumes-from mariadb-cluster-data --volumes-from mariadb-cluster-ssh -v /etc/timezone:/etc/timezone:ro -e "TZ=Europe/Berlin" --name mariadb-cluster-srv mym/mariadb-galera-10.1 /bin/start new
+docker run -t -i -d --net=host --privileged=true --volumes-from mariadb-cluster-config --volumes-from mariadb-cluster-data --volumes-from mariadb-cluster-ssh -v /etc/timezone:/etc/timezone:ro -e "TZ=Europe/Berlin" --name mariadb-cluster-srv mym/mariadb-galera-10.3 /bin/start new
 ```
 
 Start other servers with :
 ```
 # other servers
-docker run -t -i -d --net=host --privileged=true --volumes-from mariadb-cluster-config --volumes-from mariadb-cluster-data --volumes-from mariadb-cluster-ssh -v /etc/timezone:/etc/timezone:ro -e "TZ=Europe/Berlin" --name mariadb-cluster-srv mym/mariadb-galera-10.1 /bin/start node
+docker run -t -i -d --net=host --privileged=true --volumes-from mariadb-cluster-config --volumes-from mariadb-cluster-data --volumes-from mariadb-cluster-ssh -v /etc/timezone:/etc/timezone:ro -e "TZ=Europe/Berlin" --name mariadb-cluster-srv mym/mariadb-galera-10.3 /bin/start node
 ```
 
 # 4 - Restart server1 in "node mode"
@@ -68,7 +68,7 @@ It is very important to restart the first node just like the other. Otherwise if
 ```
 docker stop mariadb-cluster-srv
 docker rm mariadb-cluster-srv
-docker run -t -i -d --net=host --privileged=true --volumes-from mariadb-cluster-config --volumes-from mariadb-cluster-data --volumes-from mariadb-cluster-ssh -v /etc/timezone:/etc/timezone:ro -e "TZ=Europe/Berlin" --name mariadb-cluster-srv mym/mariadb-galera-10.1 /bin/start node
+docker run -t -i -d --net=host --privileged=true --volumes-from mariadb-cluster-config --volumes-from mariadb-cluster-data --volumes-from mariadb-cluster-ssh -v /etc/timezone:/etc/timezone:ro -e "TZ=Europe/Berlin" --name mariadb-cluster-srv mym/mariadb-galera-10.3 /bin/start node
 ```
 
 # 5 - Debug
@@ -78,15 +78,15 @@ tail -f /var/data/mariadb/error.log
 ```
 
 
-# 6 - Migration from 10.0
+# 6 - Migration from 10.1
 
 ```
-docker build -t mym/mariadb-galera-10.1 https://github.com/MineYourMind/docker-mariadb-10.1-galera.git && \
-docker run --name mariadb-cluster-config -v /var/configs/mariadb-cluster/conf.d:/etc/mysql/conf.d busybox true && \
-docker run --name mariadb-cluster-data -v /var/data/mariadb-cluster:/data busybox true && \
-docker run --name mariadb-cluster-ssh -v /var/configs/mariadb-cluster/.ssh:/root/.ssh busybox true && \
-cp -rv /var/configs/mariadb/* /var/configs/mariadb-cluster/ && \
-sed -i '65i wsrep_on=ON' /var/configs/mariadb-cluster/conf.d/cluster.cnf && \
-docker stop mariadb-srv && \
-docker run -t -i -d --net=host --privileged=true --volumes-from mariadb-cluster-config --volumes-from mariadb-cluster-data --volumes-from mariadb-cluster-ssh -v /etc/timezone:/etc/timezone:ro -e "TZ=Europe/Berlin" --name mariadb-cluster-srv mym/mariadb-galera-10.1 /bin/start node
+docker build -t mym/mariadb-galera-10.3 https://github.com/MineYourMind/docker-mariadb-10.3-galera.git && \
+docker run --name mariadb-10.3-cluster-config -v /var/configs/mariadb-10.3-cluster/conf.d:/etc/mysql/conf.d busybox true && \
+docker run --name mariadb-10.3-cluster-data -v /var/data/mariadb-10.3-cluster:/data busybox true && \
+docker run --name mariadb-10.3-cluster-ssh -v /var/configs/mariadb-10.3-cluster/.ssh:/root/.ssh busybox true && \
+cp -rv /var/configs/mariadb-cluster/* /var/configs/mariadb-10.3-cluster/ && \
+sed -i '65i wsrep_on=ON' /var/configs/mariadb-10.3-cluster/conf.d/cluster.cnf && \
+docker stop mariadb-cluster-srv && \
+docker run -t -i -d --net=host --privileged=true --volumes-from mariadb-10.3-cluster-config --volumes-from mariadb-10.3-cluster-data --volumes-from mariadb-10.3-cluster-ssh -v /etc/timezone:/etc/timezone:ro -e "TZ=Europe/Berlin" --name mariadb-10.3-cluster-srv mym/mariadb-galera-10.3 /bin/start node
 ```

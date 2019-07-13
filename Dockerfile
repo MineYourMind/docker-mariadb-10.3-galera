@@ -5,7 +5,7 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu xenial main universe" > /etc/apt/
 RUN apt-get -q -y update
 RUN apt-get -q -y install software-properties-common wget unzip curl
 RUN apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-RUN add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://mirror.daniel-jost.net/mariadb/repo/10.1/ubuntu xenial main'
+RUN add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://ftp.hosteurope.de/mirror/mariadb.org/repo/10.3/ubuntu xenial main'
 RUN apt-get -q -y update
 RUN echo mariadb-server mysql-server/root_password password root | debconf-set-selections
 RUN echo mariadb-server mysql-server/root_password_again password root | debconf-set-selections
