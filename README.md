@@ -42,7 +42,7 @@ docker run --name mariadb-cluster-ssh -v /var/configs/mariadb-cluster/.ssh:/root
 
 # 2 - Config
 ```
-cd /var/configs/mariadb/conf.d
+cd /var/configs/mariadb-cluster/conf.d
 sudo nano cluster.cnf
 ```
 Change <IP> to IP you want
